@@ -112,13 +112,13 @@ namespace LibRegex
             {
                 foreach (FileInfo fileSlave in ListSlave)
                 {
-                    if(RenameWithRegex(_path, fileMain, fileSlave))
+                    if (RenameWithRegex(_path, fileMain, fileSlave))
                     {
                         string[] filesArray = new string[2];
                         filesArray[0] = fileMain.Name;
                         filesArray[1] = fileSlave.Name;
                         list.Add(filesArray);
-                    }                   
+                    }
                     //RenameSemRegex(path, fileMain, fileSTR);
                 }
             }
@@ -127,19 +127,35 @@ namespace LibRegex
         private bool RenameWithRegex(string path, FileInfo fileMain, FileInfo fileSlave)
         {
 
-            //Regex reg = new Regex("(s\\d{2}e\\d{2})", RegexOptions.IgnoreCase);
-
             string nomeSlave = _regex.Match(fileSlave.Name).Value;
             string nomeMain = _regex.Match(fileMain.Name).Value;
-
-            if (nomeSlave.ToUpper() == nomeMain.ToUpper())
+            string originalPath;
+            string newPath;
+            try
             {
-                string originalPath = path + "\\" + fileSlave.Name;
-                string newPath = path + "\\" + fileMain.Name.Replace(fileMain.Extension, "") + fileSlave.Extension;
-                File.Move(originalPath, newPath);
-                return true;
+                //Regex reg = new Regex("(s\\d{2}e\\d{2})", RegexOptions.IgnoreCase);
+
+
+                if (nomeSlave.ToUpper() == nomeMain.ToUpper())
+                {
+                    originalPath = path + "\\" + fileSlave.Name;
+                    newPath = path + "\\" + fileMain.Name.Replace(fileMain.Extension, "") + fileSlave.Extension;
+                    if (File.Exists(originalPath) && !File.Exists(newPath))
+                    {
+                        File.Move(originalPath, newPath);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return false;
             }
-            return false;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         private bool RenameSemRegex(string path, FileInfo fileMain, FileInfo fileSlave)
         {
